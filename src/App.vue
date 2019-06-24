@@ -1,12 +1,50 @@
 <template>
   <div id="app">
-    <div id="nav">
+    <!--<div id="nav">
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link>
     </div>
-    <router-view/>
+    <router-view/>-->
+    <Login @changeView='changeView' @setUser='setUser' v-if="layout === 'login'"/>
   </div>
 </template>
+
+
+<script>
+import './services/google-api' //initialize Google API Services 
+
+//import MainMenu from './components/MainMenu.vue'
+//import ArScene from './components/ArScene.vue'
+import Login from './views/Login.vue'
+
+export default {
+  name: 'app',
+  components: {
+    //MainMenu,
+    //ArScene,
+    Login
+  },
+  data: function () {
+    return {
+      layout: 'login',
+      resource: null,
+      user: null,
+    }
+  },
+  methods: {
+    changeView: function (layout) {
+      this.layout = layout;
+    },
+    setResource: function (resource){
+      this.resource = resource;
+    },
+    setUser: function (user){
+      this.user = user;
+    }
+  }
+}
+</script>
+
 
 <style lang="scss">
 #app {

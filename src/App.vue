@@ -6,6 +6,8 @@
     </div>
     <router-view/>-->
     <Login @changeView='changeView' @setUser='setUser' v-if="layout === 'login'"/>
+    <MainMenu title="Violet xR" :user='user' @setResource='setResource' @changeView='changeView' v-else-if="layout === 'home'"/>
+    <ArScene title="Paintball AR" :resourceUrl='resource.url' :resourceType='resource.type'  @changeView='changeView' v-else-if="layout === 'ar'"/>
   </div>
 </template>
 
@@ -13,15 +15,15 @@
 <script>
 import './services/google-api' //initialize Google API Services 
 
-//import MainMenu from './components/MainMenu.vue'
-//import ArScene from './components/ArScene.vue'
+import MainMenu from './views/MainMenu.vue'
+import ArScene from './views/ArScene.vue'
 import Login from './views/Login.vue'
 
 export default {
   name: 'app',
   components: {
-    //MainMenu,
-    //ArScene,
+    MainMenu,
+    ArScene,
     Login
   },
   data: function () {

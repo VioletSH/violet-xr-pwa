@@ -1,5 +1,5 @@
 <template>
-  <div class="paintball-map">
+  <div>
     <button v-on:click="goToMenu()" style="position:fixed; top:2rem; left:2rem; z-index: 10000;"> back</button>
     <div class="perms" v-if="askPerms">
       <h2 class="site-title">{{title}}</h2>
@@ -9,7 +9,10 @@
     </div>
     <div class="ar-scene" v-if="allowAR">
       <a-scene embedded arjs='trackingMethod: best; debugUIEnabled: false' vr-mode-ui="enabled: false">
-          <a-marker preset='hiro'>
+          <a-marker preset='hiro'> <!--Define the marker where the content will appear-->
+
+          <!--Define as PDF src, Google Docs components will export to pdf format and use this  this too
+            Look for HtmlElement to Render the PDF (Needs To Rename)-->
            <a-entity 
                       geometry="primitive: plane" 
                       material="shader: html; target: #htmlElement; fps: 10;"
@@ -17,8 +20,11 @@
                       scale = "3 2 1"
                       v-if="resourceType === 'application/pdf'"
                       >
-            </a-entity>
+            </a-entity> 
+
+            <!--Load GLTF Objects, accepts JSON GLTF and Binary GLB-->
             <a-entity :gltf-model='this.src' animation-mixer v-else-if="resourceType === 'model/gltf-binary'||resourceType==='model/gltf+json'"></a-entity>
+            <a-image :src='this.src' v-else-if="resourceType.includes('image')"></a-image>
           </a-marker>
         <a-entity camera></a-entity>
       </a-scene>
@@ -65,44 +71,18 @@ export default {
       case('application/pdf'):
         this.pdfUrl={data:this.resourceUrl}
         break;
-      case('model/gltf+json'):
+      default:
       this.src=this.resourceUrl
-      break;
-      case('model/gltf-binary'):
-      this.src=this.resourceUrl
-      break;
     }
   },
-  updated:function(){
-    /*var loader = new THREE.GLTFLoader();
-    var uint8Array = new TextEncoder().encode(this.resourceUrl).filter(x=>x!==194)
-    var buffer =  uint8Array.buffer.slice(uint8Array.byteOffset, uint8Array.byteLength + uint8Array.byteOffset)
-    console.log(buffer)
-      loader.parse(
-        // resource URL
-        // called when the resource is loaded
-        buffer,' ',
-        function ( gltf ) {
-
-          document.getElementById('gtlf').object3D.add( gltf.scene );
-
-          gltf.animations; // Array<THREE.AnimationClip>
-          gltf.scene; // THREE.Scene
-          gltf.scenes; // Array<THREE.Scene>
-          gltf.cameras; // Array<THREE.Camera>
-          gltf.asset; // Object
-
-        },
-        function ( error ) {
-          console.log( 'An error happened' );
-          console.log(error)
-        }
-      );
-    */},
   destroyed:function(){
+    //Remove Video element disaling webcam
     var arCamera=document.querySelector('video');
     if(arCamera)
       arCamera.parentNode.removeChild(arCamera)
+    //Remove ARjs events onRize view custom.js in public/js
+    window.removeEventListeners('resize')
+    document.body.removeAttribute("style")
   },
   methods: {
     goToMenu: function(){

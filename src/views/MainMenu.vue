@@ -1,45 +1,37 @@
 <template>
   <div class="paintball">
     <div style="position:absolute;top:0.5em;right:0.5em;display:flex;align-items:center;z-index:10">
+        <h2 class="site-title">{{title}}</h2>
       <span>{{user.name}}</span>
       <img :src="user.image"/>
     </div>
 
-    <h2 class="site-title">{{title}}</h2>
-
-    <div class="container">
-      <div>
-        <div v-for="item in items" v-bind:key='"M"+item.id'>
-          <button v-on:click="displayModules(item.id)">{{item.abreviatura}}</button>
-        </div>
-      </div>
-
-      <div>
-        <div v-for="item in subItems" v-bind:key='"A"+item.id'>
-          <button v-on:click="displayActivities(item.id)" style="background-color:red">{{item.nombre}}</button>
-        </div>
-      </div>
-
-      <div>
-        <div v-for="item in subSubItems" v-bind:key='"C"+item.id'>
-          <button v-on:click="displayContents(item.id)" style="background-color:green">{{item.nombre}}</button>
-        </div>
-      </div>
-
-      <div>
-        <div v-for="item in subSubSubItems" v-bind:key='"R"+item.id'>
-          <button  v-on:click="setResource(item.peticion)" style="background-color:black">{{item.peticion.tipoContenido}}</button>
-        </div>
-      </div>
-
-    </div>
     <!-- arjs="none" will throw and error, but is a way to disable it -->
-    <a-scene style="z-index:-10" arjs="none"> 
-      <a-box position="-1 0.5 -3" rotation="0 45 0" color="#4CC3D9"></a-box>
-      <a-sphere position="0 1.25 -5" radius="1.25" color="#EF2D5E"></a-sphere>
-      <a-cylinder position="1 0.75 -3" radius="0.5" height="1.5" color="#FFC65D"></a-cylinder>
-      <a-plane position="0 0 -4" rotation="-90 0 0" width="4" height="4" color="#7BC8A4"></a-plane>
-      <a-sky color="lightyellow"></a-sky>
+    <a-scene arjs="none">
+      <!--Cursor & camera-->
+      <a-entity camera look-controls wasd-controls='fly:true'>
+        <a-entity
+        animation__click="property: scale; startEvents: click; easing: easeInCubic; dur: 150; from: 0.1 0.1 0.1; to: 1 1 1"
+        animation__fusing="property: scale; startEvents: fusing; easing: easeInCubic; dur: 1500; from: 1 1 1; to: 0.1 0.1 0.1"
+        animation__mouseleave="property: scale; startEvents: mouseleave; easing: easeInCubic; dur: 500; to: 1 1 1"
+        cursor="fuse: true;"
+        material="color: #8800FF; shader: flat"
+        position="0 0 -3"
+        geometry="primitive: ring; radiusInner: 0.1; radiusOuter: 0.15"
+        >
+        </a-entity>
+      </a-entity>
+
+      <!--menu--> 
+      <a-entity ref="menu" position="0 0 -5">
+          <a-hexgrid :src="hexMap"
+          menu-layout
+          v-pre
+          ></a-hexgrid>
+      </a-entity>
+
+      <!--The Sky is beauty :)-->
+      <a-sky color="black"></a-sky>
     </a-scene>
 
   </div>
@@ -48,6 +40,11 @@
 <script>
 import * as SERVICES from '../services/backend-api'
 import {getFileFromGoogle} from '../services/google-api'
+
+import hexMap from '../assets/json/hex-map.json'
+
+import {createMenuLayout} from '../assets/js/createHexMenu' 
+
 export default {
   name: 'MainMenu',
   props: {
@@ -63,6 +60,16 @@ export default {
     }
   },
   mounted:function(){
+    var menu = this.$refs.menu
+    let isMenuLoaded = false;
+    AFRAME.registerComponent('menu-layout', {
+      tick: function(){
+        if(!isMenuLoaded){
+          isMenuLoaded = createMenuLayout(menu)
+        }
+      }
+    });
+
     SERVICES.getCursos(1)
     .then(response=>this.items=response.data)
   },

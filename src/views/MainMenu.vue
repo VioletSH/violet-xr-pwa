@@ -69,7 +69,7 @@ export default {
         tempData.push({text:element.abreviatura,id:element.id})
       });
       this.items = tempData
-      createMenuLayout(menu,tempData)
+      createMenuLayout(menu,tempData,this.displayModules)
       }
     )
     // AFRAME.registerComponent('menu-layout', {
@@ -82,8 +82,16 @@ export default {
   },
   methods:{
     displayModules:function(id){
+      var menu = this.$refs.menu
       SERVICES.getModulos(id)
-      .then(response=>this.subItems=response.data)
+      .then(response=>{
+      var tempData=[]
+      response.data.forEach(element => {
+        tempData.push({text:element.nombre,id:element.id})
+      });
+      this.items = tempData
+      createMenuLayout(menu,tempData,this.displayModules)
+      })
     },
     displayActivities:function(id){
       this.subSubItems=[]

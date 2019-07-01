@@ -1,12 +1,8 @@
-var createMenuLayout =(menuEntity, items)=>{
+var createMenuLayout =(menuEntity, items, onClick)=>{
     items = items?items:[{text:'Hellow',id:0},{text:'Holiwis',id:1}, {text:'Yei',id:2},{text:'Nelson',id:3}]//Testing purposes
     var materials = createMaterials();
 
     var grid = menuEntity.querySelector('a-hexgrid')
-    if(!grid) {
-        menuEntity.innerHTML='<<a-hexgrid :src="hexMap"v-pre></a-hexgrid>'
-        var grid = menuEntity.querySelector('a-hexgrid')
-    }
     var gridObject = grid.object3D
     
     var firstLevelChildren = gridObject.children
@@ -15,6 +11,11 @@ var createMenuLayout =(menuEntity, items)=>{
         if(secondLevelChildren.length){
             var hexItems = secondLevelChildren[0].children
             if(hexItems.length){
+                
+                //First remove the remainging elements
+                var oldData = menuEntity.querySelector('a-entity')
+                if(oldData) menuEntity.removeChild(oldData)
+
                 menuEntity.innerHTML+='<a-entity></a-entity>'
                 for(var i = 0; i<items.length; i++){//Replace by array of items
                     var hex = hexItems[i]
@@ -32,7 +33,7 @@ var createMenuLayout =(menuEntity, items)=>{
                     entity.appendChild(textEntity)
                     entityGroup.appendChild(entity)
 
-                    createCompatibleEntity(hex,materials,entity)
+                    createCompatibleEntity(hex,materials,entity,onClick)
                 }
                 menuEntity.object3D.rotation.set(Math.PI/2,0,0)
                 menuEntity.object3D.scale.set(0.1,0.1,0.1)
@@ -94,7 +95,7 @@ var createMaterials =()=>{
     });
     return{outline:outline_material,fusing:outline_Fusing_material}
 }
-var createCompatibleEntity=(originObject, materials, entity)=>{
+var createCompatibleEntity=(originObject, materials, entity,onClick)=>{
 
     var objectCopy = new THREE.Mesh( originObject.geometry, originObject.material )
     objectCopy.material.color.set( 0x220033 );
@@ -104,8 +105,8 @@ var createCompatibleEntity=(originObject, materials, entity)=>{
     objectCopy.add(outline)
     outline.scale.set(1.05,1.05,1.05)
 
-    var pos = originObject.getWorldPosition()
-    var scale = originObject.getWorldScale()
+    var pos = originObject.position
+    var scale = originObject.scale
 
     entity.setObject3D('Mesh',objectCopy)
 
@@ -114,7 +115,8 @@ var createCompatibleEntity=(originObject, materials, entity)=>{
     entity.object3D.rotation.set(-Math.PI/2,0,0)
 
     entity.addEventListener('click',function(){
-    console.log('You Click Me :3 !')
+        console.log('Yei, you clicked on me')
+        onClick(1)//Replace on reading
     })
     entity.addEventListener('fusing',function(){
     this.object3D.children[1].children[0].material=materials.fusing

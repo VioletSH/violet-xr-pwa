@@ -1,6 +1,6 @@
 <template>
     <div id="htmlElement" ref='parent'>
-        <pdf :src='src' :page='5'></pdf>
+        <pdf v-for="i in numPages" :key='i' :src='Pdfsrc' :page='i'></pdf>
     </div>
 </template>
 
@@ -19,9 +19,17 @@ components: {
   },
   data: function () {
     return {
+      Pdfsrc: undefined,
+      numPages: 0                  
     }
   },
     mounted: function(){
+      var loadingTask = pdf.createLoadingTask(this.src);
+      this.Pdfsrc=loadingTask;
+      this.Pdfsrc.then(pdf => {
+        this.numPages = pdf.numPages;
+        console.log(pdf)
+      });
     }
   
 }
@@ -39,37 +47,7 @@ components: {
         background-color:white; 
         z-index: -1000;
     }
-    #htmlElement *{
-      width: 80%;
+    #htmlElement span{
+      width: 100%
     }
-.anim {
-  width: 100px;
-  height: 100px;
-  background-color: red;
-  position: relative;
-  -webkit-animation-name: example; /* Safari 4.0 - 8.0 */
-  -webkit-animation-duration: 4s; /* Safari 4.0 - 8.0 */
-  -webkit-animation-iteration-count: infinite; /* Safari 4.0 - 8.0 */
-  animation-name: example;
-  animation-duration: 4s;
-  animation-iteration-count: infinite;
-}
-
-/* Safari 4.0 - 8.0 */
-@-webkit-keyframes example {
-  0%   {background-color:red; left:0px; top:0px;}
-  25%  {background-color:yellow; left:80%; top:0px;}
-  50%  {background-color:blue; left:80%; top:80%;}
-  75%  {background-color:green; left:0px; top:80%;}
-  100% {background-color:red; left:0px; top:0px;}
-}
-
-/* Standard syntax */
-@keyframes example {
-  0%   {background-color:red; left:0px; top:0px;}
-  25%  {background-color:yellow; left:80%; top:0px;}
-  50%  {background-color:blue; left:80%; top:80%;}
-  75%  {background-color:green; left:0px; top:80%;}
-  100% {background-color:red; left:0px; top:0px;}
-}
 </style>

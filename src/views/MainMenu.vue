@@ -77,7 +77,6 @@ export default {
     },
     setResource(item){
       //Updates the url and creates a new object
-      //if(item.tipoContenido==='model/gltf+json'||item.tipoContenido==='model/gltf+binary')
       if (item.tipoContenido=== 'model/gltf-binary' || item.tipoContenido==='model/gltf+json')
       {
         var resource={
@@ -94,7 +93,6 @@ export default {
             type:item.tipoContenido,
             url:url
           }
-          console.log(url)
           this.$emit('setResource',resource)
           this.$emit('changeView','ar')
         })

@@ -1,13 +1,11 @@
 <template>
   <div class="paintball">
-    <div style="position:absolute;top:0.5em;right:0.5em;display:flex;align-items:center">
+    <div style="position:absolute;top:0.5em;right:0.5em;display:flex;align-items:center;z-index:10">
       <span>{{user.name}}</span>
       <img :src="user.image"/>
     </div>
 
     <h2 class="site-title">{{title}}</h2>
-
-    <h2>Select items</h2>
 
     <div class="container">
       <div>
@@ -35,6 +33,14 @@
       </div>
 
     </div>
+    <!-- arjs="none" will throw and error, but is a way to disable it -->
+    <a-scene style="z-index:-10" arjs="none"> 
+      <a-box position="-1 0.5 -3" rotation="0 45 0" color="#4CC3D9"></a-box>
+      <a-sphere position="0 1.25 -5" radius="1.25" color="#EF2D5E"></a-sphere>
+      <a-cylinder position="1 0.75 -3" radius="0.5" height="1.5" color="#FFC65D"></a-cylinder>
+      <a-plane position="0 0 -4" rotation="-90 0 0" width="4" height="4" color="#7BC8A4"></a-plane>
+      <a-sky color="lightyellow"></a-sky>
+    </a-scene>
 
   </div>
 </template>

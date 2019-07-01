@@ -36,6 +36,7 @@
 </template>
 
 <script>
+
 import HtmlElement from '../components/HtmlElement'
 import Vue from 'vue'
   Vue.config.ignoredElements = [

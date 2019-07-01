@@ -15,6 +15,7 @@
 <script>
 import './services/google-api' //initialize Google API Services 
 
+//Components
 import MainMenu from './views/MainMenu.vue'
 import ArScene from './views/ArScene.vue'
 import Login from './views/Login.vue'

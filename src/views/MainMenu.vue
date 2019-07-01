@@ -18,6 +18,7 @@
         material="color: #8800FF; shader: flat"
         position="0 0 -3"
         geometry="primitive: ring; radiusInner: 0.1; radiusOuter: 0.15"
+        raycaster="far: 20; interval: 1000; objects: .clickable"
         >
         </a-entity>
       </a-entity>
@@ -25,7 +26,6 @@
       <!--menu--> 
       <a-entity ref="menu" position="0 0 -5">
           <a-hexgrid :src="hexMap"
-          menu-layout
           v-pre
           ></a-hexgrid>
       </a-entity>
@@ -62,16 +62,23 @@ export default {
   mounted:function(){
     var menu = this.$refs.menu
     let isMenuLoaded = false;
-    AFRAME.registerComponent('menu-layout', {
-      tick: function(){
-        if(!isMenuLoaded){
-          isMenuLoaded = createMenuLayout(menu)
-        }
-      }
-    });
-
     SERVICES.getCursos(1)
-    .then(response=>this.items=response.data)
+    .then(response=>{
+      var tempData=[]
+      response.data.forEach(element => {
+        tempData.push({text:element.abreviatura,id:element.id})
+      });
+      this.items = tempData
+      createMenuLayout(menu,tempData)
+      }
+    )
+    // AFRAME.registerComponent('menu-layout', {
+    //   tick: function(){
+    //     if(!isMenuLoaded){
+    //       isMenuLoaded = createMenuLayout(menu)
+    //     }
+    //   }
+    // });
   },
   methods:{
     displayModules:function(id){

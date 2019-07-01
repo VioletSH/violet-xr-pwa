@@ -1,8 +1,12 @@
 var createMenuLayout =(menuEntity, items)=>{
-    items = items?items:['Hellow','Im in', 'Yai','item2']
+    items = items?items:[{text:'Hellow',id:0},{text:'Holiwis',id:1}, {text:'Yei',id:2},{text:'Nelson',id:3}]//Testing purposes
     var materials = createMaterials();
 
-    var grid = menuEntity.firstElementChild
+    var grid = menuEntity.querySelector('a-hexgrid')
+    if(!grid) {
+        menuEntity.innerHTML='<<a-hexgrid :src="hexMap"v-pre></a-hexgrid>'
+        var grid = menuEntity.querySelector('a-hexgrid')
+    }
     var gridObject = grid.object3D
     
     var firstLevelChildren = gridObject.children
@@ -16,8 +20,9 @@ var createMenuLayout =(menuEntity, items)=>{
                     var hex = hexItems[i]
                     var entityGroup = menuEntity.lastElementChild
                     var entity= document.createElement("A-ENTITY");
+                    entity.classList.add('clickable')
                     var textEntity= document.createElement("A-TEXT");
-                    textEntity.setAttribute("value",items[i])
+                    textEntity.setAttribute("value",items[i].text)
                     textEntity.setAttribute("color",'white')
                     textEntity.setAttribute("align",'center')
 
@@ -31,7 +36,8 @@ var createMenuLayout =(menuEntity, items)=>{
                 }
                 menuEntity.object3D.rotation.set(Math.PI/2,0,0)
                 menuEntity.object3D.scale.set(0.1,0.1,0.1)
-                menuEntity.removeChild(menuEntity.firstElementChild)
+                menuEntity.firstElementChild.object3D.visible=false
+                //menuEntity.removeChild(menuEntity.firstElementChild)
                 return true
             }
             else{

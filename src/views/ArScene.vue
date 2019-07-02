@@ -59,8 +59,8 @@ export default {
   },
   data: function () {
     return {
-      askPerms: true,
-      allowAR: false,
+      askPerms: false,//true
+      allowAR: true,//false
       allowCamera: false,
 
       psdfSrc: Object,

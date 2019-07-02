@@ -72,13 +72,6 @@ export default {
       createMenuLayout(menu,tempData,this.displayModules)
       }
     )
-    // AFRAME.registerComponent('menu-layout', {
-    //   tick: function(){
-    //     if(!isMenuLoaded){
-    //       isMenuLoaded = createMenuLayout(menu)
-    //     }
-    //   }
-    // });
   },
   methods:{
     displayModules:function(id){
@@ -90,20 +83,35 @@ export default {
         tempData.push({text:element.nombre,id:element.id})
       });
       this.items = tempData
-      createMenuLayout(menu,tempData,this.displayModules)
+      createMenuLayout(menu,tempData,this.displayActivities)
       })
     },
     displayActivities:function(id){
-      this.subSubItems=[]
+      var menu = this.$refs.menu
       SERVICES.getActividades(id)
-      .then(response=>this.subSubItems=response.data)
+      .then(response=>{
+      var tempData=[]
+      response.data.forEach(element => {
+        tempData.push({text:element.nombre,id:element.id})
+      });
+      this.items = tempData
+      createMenuLayout(menu,tempData,this.displayContents)
+      })
     },
     displayContents:function(id){
+      var menu = this.$refs.menu
       this.subSubSubItems=[]
       SERVICES.getContenidos(id)
-      .then(response=>this.subSubSubItems=response.data)
+      .then(response=>{
+      var tempData=[]
+      response.data.forEach(element => {
+        tempData.push({text:element.peticion.tipoContenido,id:element.peticion})//rename id for consistense
+      });
+      this.items = tempData
+      createMenuLayout(menu,tempData,this.setResource)
+      })
     },
-    setResource(item){
+    setResource:function(item){
       //Updates the url and creates a new object
       if (item.tipoContenido=== 'model/gltf-binary' || item.tipoContenido==='model/gltf+json')
       {

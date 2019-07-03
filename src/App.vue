@@ -6,7 +6,7 @@
     </div>
     <router-view/>-->
     <Login @changeView='changeView' @setUser='setUser' v-if="layout === 'login'"/>
-    <MainMenu title="Violet xR" :user='user' @setResource='setResource' @changeView='changeView' v-else-if="layout === 'home'"/>
+    <MainMenu title="Violet xR" :key='isAR+1' :user='user' :isAR='isAR' @switchxR='switchxR' @setResource='setResource' @changeView='changeView' v-else-if="layout === 'home'"/>
     <ArScene title="Paintball AR" :resourceUrl='resource.url' :resourceType='resource.type'  @changeView='changeView' v-else-if="layout === 'ar'"/>
   </div>
 </template>
@@ -32,6 +32,7 @@ export default {
       layout: 'login',
       resource: null,
       user: null,
+      isAR:false,
     }
   },
   methods: {
@@ -43,6 +44,9 @@ export default {
     },
     setUser: function (user){
       this.user = user;
+    },
+    switchxR: function(){
+      this.isAR=!this.isAR
     }
   }
 }

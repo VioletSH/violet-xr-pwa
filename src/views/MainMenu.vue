@@ -5,9 +5,41 @@
       <span>{{user.name}}</span>
       <img :src="user.image"/>
     </div>
+    <button v-on:click='switchxR' style="position:absolute;top:0.5em;left:0.5em;z-index:10">switchxR</button>
 
+    <!--AR-->
+    <!--AR-->
+    <a-scene arjs="" v-if="isAR" >
+      <!--Cursor & camera-->
+      <a-entity camera look-controls wasd-controls='fly:true'>
+        <a-entity
+        animation__click="property: scale; startEvents: click; easing: easeInCubic; dur: 150; from: 0.1 0.1 0.1; to: 1 1 1"
+        animation__fusing="property: scale; startEvents: fusing; easing: easeInCubic; dur: 1500; from: 1 1 1; to: 0.1 0.1 0.1"
+        animation__mouseleave="property: scale; startEvents: mouseleave; easing: easeInCubic; dur: 500; to: 1 1 1"
+        cursor="fuse: true;"
+        material="color: #8800FF; shader: flat"
+        position="0 0 -10"
+        geometry="primitive: ring; radiusInner: 0.1; radiusOuter: 0.15"
+        raycaster="far: 20; interval: 1000; objects: .clickable"
+        >
+        </a-entity>
+      </a-entity>
+
+      <!--menu--> 
+      <a-marker preset='hiro'> <!--Define the marker where the content will appear-->
+        <a-entity ref="menu" position="0 0 0">
+            <a-hexgrid :src="hexMap"
+            v-pre
+            ></a-hexgrid>
+        </a-entity>
+      </a-marker>
+    </a-scene>
+
+
+
+    <!--VR-->
     <!-- arjs="none" will throw and error, but is a way to disable it -->
-    <a-scene arjs="none">
+    <a-scene arjs="none" v-else>
       <!--Cursor & camera-->
       <a-entity camera look-controls wasd-controls='fly:true'>
         <a-entity
@@ -33,7 +65,6 @@
       <!--The Sky is beauty :)-->
       <a-sky color="black"></a-sky>
     </a-scene>
-
   </div>
 </template>
 
@@ -49,7 +80,8 @@ export default {
   name: 'MainMenu',
   props: {
     title: String,
-    user: Object
+    user: Object,
+    isAR: Boolean,
   },
   data: function () {
     return {
@@ -60,6 +92,10 @@ export default {
     }
   },
   mounted:function(){
+    this.displayCursos(1)
+  },
+  methods:{
+    displayCursos:function(id){
     var menu = this.$refs.menu
     let isMenuLoaded = false;
     SERVICES.getCursos(1)
@@ -72,8 +108,7 @@ export default {
       createMenuLayout(menu,tempData,this.displayModules)
       }
     )
-  },
-  methods:{
+    },
     displayModules:function(id){
       var menu = this.$refs.menu
       SERVICES.getModulos(id)
@@ -133,6 +168,9 @@ export default {
           this.$emit('changeView','ar')
         })
       }
+    },
+    switchxR:function(){
+      this.$emit('switchxR','')
     }
   }
 }

@@ -19,23 +19,25 @@ var createMenuLayout =(menuEntity, items, onClick)=>{
                 menuEntity.innerHTML+='<a-entity></a-entity>'
                 for(var i = 0; i<items.length; i++){//Replace by array of items
                     var hex = hexItems[i]
-                    var entityGroup = menuEntity.lastElementChild
-                    var entity= document.createElement("A-ENTITY");
-                    entity.classList.add('clickable')
-                    var textEntity= document.createElement("A-TEXT");
-
-                    textEntity.setAttribute("value",items[i].text)
-                    textEntity.setAttribute("color",'white')
-                    textEntity.setAttribute("align",'center')
-
-                    textEntity.object3D.position.set(0,0,1.5)
-                    textEntity.object3D.scale.set(10,10,10)
-
-                    entity.appendChild(textEntity)
-                    entityGroup.appendChild(entity)
-
-                    createCompatibleEntity(hex,materials,entity)
-                    createCursorListeners(entity,materials,items[i].id,onClick)
+                    if(hex){//Prevents overflow that breaks the code (Maximum set on number of hexmap items)
+                        var entityGroup = menuEntity.lastElementChild
+                        var entity= document.createElement("A-ENTITY");
+                        entity.classList.add('clickable')
+                        var textEntity= document.createElement("A-TEXT");
+    
+                        textEntity.setAttribute("value",items[i].text)
+                        textEntity.setAttribute("color",'white')
+                        textEntity.setAttribute("align",'center')
+    
+                        textEntity.object3D.position.set(0,0,1.5)
+                        textEntity.object3D.scale.set(10,10,10)
+    
+                        entity.appendChild(textEntity)
+                        entityGroup.appendChild(entity)
+    
+                        createCompatibleEntity(hex,materials,entity)
+                        createCursorListeners(entity,materials,items[i].id,onClick)
+                    }
                 }
                 menuEntity.object3D.rotation.set(Math.PI/2,0,0)
                 menuEntity.object3D.scale.set(0.1,0.1,0.1)
@@ -97,7 +99,7 @@ var createMaterials =()=>{
     });
     return{outline:outline_material,fusing:outline_Fusing_material}
 }
-var createCompatibleEntity=(originObject, materials, entity,onClick)=>{
+var createCompatibleEntity=(originObject, materials, entity)=>{
     var objectCopy = new THREE.Mesh( originObject.geometry, originObject.material )
     objectCopy.material.color.set( 0x220033 );
     //objectCopy.material.colorWrite=false; //Working but renderOrder doesn't

@@ -1,6 +1,6 @@
 <template>
-    <div id="htmlElement" ref='parent'>
-        <pdf v-for="i in numPages" :key='i' :src='Pdfsrc' :page='i'></pdf>
+    <div id="htmlElement" ref='parent' v-on:click='nextPage'>
+        <pdf :src="src" :page="currentPage" @num-pages="numPages=$event"></pdf>        
     </div>
 </template>
 
@@ -15,22 +15,32 @@ components: {
   name: 'HtmlElement',
   props: {
     title: String,
-    src: String,
+    src: Object,
   },
   data: function () {
     return {
-      Pdfsrc: undefined,
+      currentPage:1,
       numPages: 0                  
     }
   },
-    mounted: function(){
-      var loadingTask = pdf.createLoadingTask(this.src);
-      this.Pdfsrc=loadingTask;
-      this.Pdfsrc.then(pdf => {
-        this.numPages = pdf.numPages;
-        console.log(pdf)
-      });
+  mounted: function(){
+    // var loadingTask = pdf.createLoadingTask(this.src);
+    // this.Pdfsrc=loadingTask;
+    // this.Pdfsrc.then(pdf => {
+    //   this.numPages = pdf.numPages;
+    //   console.log(pdf)
+    // });
+  },
+  methods:{
+    nextPage:function(){
+      if(this.currentPage<this.numPages)
+        this.currentPage++;
+    },
+    previousPage:function(){
+      if(this.currentPage>1)
+        this.currentPage--;
     }
+  }
   
 }
 </script>

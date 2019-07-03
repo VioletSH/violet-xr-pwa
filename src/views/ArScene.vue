@@ -9,26 +9,40 @@
     </div>
     <div class="ar-scene" v-if="allowAR">
       <a-scene embedded arjs='trackingMethod: best; debugUIEnabled: false' vr-mode-ui="enabled: false">
+        <a-entity camera look-controls wasd-controls='fly:true'>
+          <a-entity
+          animation__click="property: scale; startEvents: click; easing: easeInCubic; dur: 150; from: 0.1 0.1 0.1; to: 1 1 1"
+          animation__fusing="property: scale; startEvents: fusing; easing: easeInCubic; dur: 1500; from: 1 1 1; to: 0.1 0.1 0.1"
+          animation__mouseleave="property: scale; startEvents: mouseleave; easing: easeInCubic; dur: 500; to: 1 1 1"
+          cursor="fuse: true;"
+          material="color: #8800FF; shader: flat"
+          position="0 0 -10"
+          geometry="primitive: ring; radiusInner: 0.1; radiusOuter: 0.15"
+          raycaster="far: 20; interval: 1000; objects: .clickable"
+          >
+          </a-entity>
+        </a-entity>
           <a-marker preset='hiro'> <!--Define the marker where the content will appear-->
-
           <!--Define as PDF src, Google Docs components will export to pdf format and use this  this too
             Look for HtmlElement to Render the PDF (Needs To Rename)-->
-           <a-entity 
-                      geometry="primitive: plane" 
-                      material="shader: html; target: #htmlElement; fps: 10;"
-                      rotation="-90 0 0"
-                      scale = "3 2 1"
-                      v-if="resourceType === 'application/pdf'"
-                      >
-            </a-entity> 
-
+            <a-entity rotation="-90 0 0" v-if="resourceType === 'application/pdf'">
+              <!-- PDF -->
+              <a-entity    
+                          geometry="primitive: plane" 
+                          material="shader: html; target: #htmlElement; fps: 10;"
+                          scale = "3 2 1"
+                          >
+              </a-entity> 
+              <!-- PDF Controlls -->
+              <a-entity geometry="primitive: box" material="color: red" position="-2 0 0" class="clickable" v-on:click="changePage(0)"></a-entity>
+              <a-entity geometry="primitive: box" material="color: blue" position="2 0 0" class="clickable" v-on:click="changePage(1)"></a-entity>
+            </a-entity>
             <!--Load GLTF Objects, accepts JSON GLTF and Binary GLB-->
             <a-entity :gltf-model='this.src' animation-mixer v-else-if="resourceType === 'model/gltf-binary'||resourceType==='model/gltf+json'"></a-entity>
             <a-image :src='this.src' v-else-if="resourceType.includes('image')"></a-image>
           </a-marker>
-        <a-entity camera></a-entity>
       </a-scene>
-      <HtmlElement :src="this.pdfUrl" v-if="resourceType === 'application/pdf'"/>
+      <HtmlElement :src="this.psdfSrc" ref="pdfEntity" v-if="resourceType === 'application/pdf'"/>
     </div>
     <hr v-if="askPerms">
     <button type="button" v-if="askPerms" @click="changeLayout(true)">Load AR</button>
@@ -70,7 +84,7 @@ export default {
   mounted:function(){
     switch(this.resourceType){
       case('application/pdf'):
-        this.pdfUrl={data:this.resourceUrl}
+        this.psdfSrc={data:this.resourceUrl}
         break;
       default:
       this.src=this.resourceUrl
@@ -134,11 +148,15 @@ export default {
         }
       );
     },
-    hitRecieved: function () {
-      console.log({
-        hitRecieved: true
-      });
-      window.navigator.vibrate([200, 100, 200]);
+
+    //CallPDFLogic
+    changePage:function(direction){
+      if(direction){ //1 is next
+        this.$refs.pdfEntity.nextPage()
+      } 
+      else{ //0 or another is previous
+        this.$refs.pdfEntity.previousPage()
+      }
     }
   }
 }

@@ -10,13 +10,26 @@ Vue.use(VueGoogleApi, config)
 
 var getFileFromGoogle= (remoteUrl,gapi)=>{
     var splitedUrl = remoteUrl.split('/')
-    if(splitedUrl.includes('docs.google.com')||splitedUrl.includes('drive.google.com')){
-      var fileId = splitedUrl.reduce((a, b) => a.length > b.length ? a : b, ''); 
+    var fileId = splitedUrl.reduce((a, b) => a.length > b.length ? a : b, '');
+
+    if(splitedUrl.includes('drive.google.com')){
       return gapi.request({
         path: 'https://www.googleapis.com/drive/v3/files/'+fileId+'?alt=media',
         method: 'GET',
       }).then(response => {
-        //createLocalFile(response.body)
+        return response.body
+      })
+    }
+    else if(splitedUrl.includes('docs.google.com')){
+      return gapi.request({
+        path: 'https://www.googleapis.com/drive/v3/files/'+fileId+'/export',
+        method: 'GET',
+        params: {
+          mimeType: 'application/pdf'
+        }
+      }).then(response => {
+        console.log(response.body)
+        console.log('from Docs Google API v3')
         return response.body
       })
     }
